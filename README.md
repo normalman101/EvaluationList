@@ -1,4 +1,5 @@
-﻿classDiagram
+﻿``` mermaid
+ classDiagram
 namespace EvaluationList {
     class Mark {
         <<Enum>>
@@ -82,3 +83,4 @@ namespace Handler {
     }
 }
 FileHandler <|.. JsonHandler
+```
