@@ -1,5 +1,6 @@
 ﻿namespace EvaluationList.Core;
 
-public class Class1
+public class Entities
 {
+    
 }
