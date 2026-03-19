@@ -3,15 +3,24 @@ using System.Text.Json;
 
 public class JsonHandler : IFileHandler
 {
-    public T ReadData<T>(string filePath)
+    public List<T> ReadData<T>(string filePath)
     {
-        // if (string.IsNullOrWhiteSpace(filePath)) throw new Exception("Incorrect file path");
-        // var jsonFile = File.ReadAllText(filePath);
-        //TODO: реализовать до конца
+        if (!File.Exists(filePath)) throw new Exception("Specified file path doesn't exist");
+        
+        var jsonFile = File.ReadAllText(filePath);
+        
+        return JsonSerializer.Deserialize<List<T>>(jsonFile)!;
     }
 
-    public bool WriteData<T>(string filePath, T data)
+    public void WriteData<T>(string filePath, List<T> data)
     {
-        throw new NotImplementedException();
+        if (!File.Exists(filePath)) throw new Exception("Specified file path doesn't exist");
+
+        var options = new JsonSerializerOptions()
+        {
+            WriteIndented = true
+        };
+        
+        File.WriteAllText(filePath, JsonSerializer.Serialize(data, options));
     }
 }

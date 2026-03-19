@@ -74,13 +74,13 @@ classDiagram
     namespace Handler {
         class FileHandler {
             <<Interface>>
-            #readData~T~(string filePath) T
-            #writeData~T~(string filePath, T data) bool
+            #readData~T~(string filePath) List~T~
+            #writeData~T~(string filePath, List~T~ data) void
         }
 
         class JsonHandler {
-            +readData~T~(string filePath) T
-            +writeData~T~(string filePath, T data) bool
+            +readData~T~(string filePath) List~T~
+            +writeData~T~(string filePath, List~T~ data) void
         }
     }
     FileHandler <|.. JsonHandler
