@@ -3,12 +3,16 @@ classDiagram
     namespace EvaluationList {
         class Mark {
             <<Enum>>
-            +UNACCEPTABLE
-            +ACCEPTABLE
-            +GOOD
-            +GREAT
+            +Unacceptable
+            +Acceptable
+            +Good
+            +Great
         }
 
+        class AbstractCriteriaList {
+            -Guid Id
+            +AbstractCriteriaList(string id)
+        }
 
         class PerformanceProfile {
             -Mark _presentation
@@ -71,6 +75,72 @@ classDiagram
     TechnicalProfile <--* Evaluation
     Evaluation <--o Evaluations
 
+    namespace Person {
+        class FullName {
+            -string Name
+            -string Surname
+            -string Patronymic
+            +FullName(string name, string surname, string patronymic)
+            +GetName() string
+            +GetSurname() string
+            +GetPatronymic() string
+        }
+
+        class AbstractPerson {
+            -FullName FullName
+            -uint Age
+            +AbstractPerson(FullName fullName, uint age)
+            +GetFullName() FullName
+            +GetAge() uint
+        }
+
+        class AbstractParticipant {
+            -Guid Id
+            -Guid GroupId
+            AbstractParticipant(string id, string groupId, FullName fullName, uint age)
+            +GetId() Guid
+            +GetGroupId() Guid
+            +SetGroupId() void
+        }
+
+        class Participant {
+            +Participant(string id, string groupId, FullName fullName, uint age)
+        }
+
+        class Expert {
+            +Expert(string id, string groupId, FullName fullName, uint age)
+        }
+    }
+    FullName <--* AbstractPerson
+    AbstractPerson <--* AbstractParticipant
+    AbstractParticipant <--* Participant
+    AbstractParticipant <--* Expert
+
+    namespace Group {
+        class Direction {
+            <<Enum>>
+            +Robotics
+            +Programming
+            +Design
+        }
+
+        class AbstractGroup {
+            -Guid Id
+            -Guid CriteriaListId
+            -string Name
+            -Direction Direction
+            -HashSet~Participant~ Participants
+            -HashSet~Expert~ Experts
+            +AbstractGroup(string name, Direction direction, string id, string criteriaListId)
+            +GetId() Guid
+            +GetCriteriaListId() Guid
+            +GetName() string
+            +GetParticipants() HashSet~Participant~
+            +GetExperts() HashSet~Expert~
+        }
+    }
+    Direction <--o AbstractGroup
+
     namespace Handler {
         class FileHandler {
             <<Interface>>
@@ -84,4 +154,5 @@ classDiagram
         }
     }
     FileHandler <|.. JsonHandler
+
 ```
