@@ -1,6 +1,29 @@
-﻿``` mermaid
+```mermaid
 classDiagram
-    namespace EvaluationList {
+    namespace CriteriaList {
+        class AbstractCriteriaList {
+            <<Abstract>>
+            -Guid _id
+            -AbstractPerformanceProfile _abstractPerformanceProfile
+            -AbstractTechnicalProfile _abstractTechnicalProfile
+            -string _expertOpinion
+            +AbstractCriteriaList(string id, AbstractPerformanceProfile abstractPerformanceProfile, AbstractTechnicalProfile abstractTechnicalProfile, string expertOpinion) void
+            +GetId() Guid
+            +GetPerformanceProfile() AbstractPerformanceProfile
+            +GetTechnicalProfile() AbstractTechnicalProfile
+            +GetExpertOpinion() string
+        }
+
+        class AbstractPerformanceProfile {
+            <<Abstract>>
+            +AbstractPerformanceProfile() void
+        }
+
+        class AbstractTechnicalProfile {
+            <<Abstract>>
+            +AbstractTechnicalProfile() void
+        }
+
         class Mark {
             <<Enum>>
             +Unacceptable
@@ -9,18 +32,17 @@ classDiagram
             +Great
         }
 
-        class AbstractCriteriaList {
-            -Guid Id
-            +AbstractCriteriaList(string id)
+        class RoboticsCriteriaList {
+            +RoboticsCriteriaList(string id, RoboticsPerformanceProfile roboticsPerformanceProfile, RoboticsTechnicalProfile roboticsTechnicalProfile, string expertOpinion)
         }
 
-        class PerformanceProfile {
+        class RoboticsPerformanceProfile {
             -Mark _presentation
             -Mark _performance
             -Mark _themeCompatibility
             -Mark _relevance
             -Mark _novelty
-            +PerformanceProfile(Mark presentation, Mark preformance, Mark themeCompatibility, Mark relevance, Mark novelty)
+            +RoboticsPerformanceProfile(Mark presentation, Mark preformance, Mark themeCompatibility, Mark relevance, Mark novelty)
             +GetPresentation() Mark
             +GetPerformance() Mark
             +GetThemeCompatibility() Mark
@@ -28,7 +50,7 @@ classDiagram
             +GetNovelty() Mark
         }
 
-        class TechnicalProfile {
+        class RoboticsTechnicalProfile {
             -Mark _workability
             -Mark _actionAccuracy
             -Mark _materialVariety
@@ -37,7 +59,7 @@ classDiagram
             -Mark _hardwareAesthetic
             -Mark _technicalSolutionLiteracy
             -Mark _technicalUsability
-            +TechnicalProfile(Mark workability, Mark actionAccuracy, Mark materialVariety, Mark softwareComplexity, Mark hardwareComplexity, Mark hardwareAesthetic, Mark technicalSoultionLiteracy, Mark technicalSolution)
+            +RoboticsTechnicalProfile(Mark workability, Mark actionAccuracy, Mark materialVariety, Mark softwareComplexity, Mark hardwareComplexity, Mark hardwareAesthetic, Mark technicalSoultionLiteracy, Mark technicalSolution) void
             +GetWorkability() Mark
             +GetActionAccuracy() Mark
             +GetMaterialVariety() Mark
@@ -48,38 +70,55 @@ classDiagram
             +GetTechnicalUsability() Mark
         }
 
-        class Evaluation {
-            -Guid _id
-            -PerformanceProfile _performanceProfile
-            -TechnicalProfile _technicalProfile
-            -string _expertOpinion
-            +Evaluation(PerformanceProfile performanceProfile, TechnicalProfile, technicalProfile, string expertOpinion)
-            +GetPerformanceProfile() PerformanceProfile
-            +GetTechnicalProfile() TechnicalProfile
-            +GetExpertOpinion() string
+    }
+    AbstractPerformanceProfile <--* AbstractCriteriaList
+    AbstractTechnicalProfile <--* AbstractCriteriaList
+    AbstractCriteriaList <|-- RoboticsCriteriaList
+    AbstractPerformanceProfile <|-- RoboticsPerformanceProfile
+    AbstractTechnicalProfile <|-- RoboticsTechnicalProfile
+    Mark <--* RoboticsPerformanceProfile
+    Mark <--* RoboticsTechnicalProfile
+    RoboticsPerformanceProfile <--* RoboticsCriteriaList
+    RoboticsTechnicalProfile <--* RoboticsCriteriaList
+
+    namespace Wrapper {
+        class IWrapper {
+            <<Interface>>
+            #GetAll~T~() HashSet~T~
+            #Get~T~(string id) T
+            #Add~T~(T newData) void
+            #Update~T~(string id, T newData) void
+            #Delete(string id) void
         }
 
-        class Evaluations {
-            -List~Evaluation~ _evaluations
-            +Evaluations()
-            +GetEvaluations() List~Evaluation~
-            +GetEvaluation(string id) Evaluation
-            +AddEvaluation(Evaluation evaluation) void
-            +UpdateEvaluation(string id, Evaluation newEvaluation) void
-            +DeleteEvaluation(string id) void
+        class CriteriaLists {
+            -HashSet~AbstractCriteriaList~ _criteriaLists
+            +GetAll~AbstractCriteriaList~() HashSet~AbstractCriteriaList~
+            +Get~AbstractCriteriaList~(string id) AbstractCriteriaList
+            +Add~AbstractCriteriaList~(AbstractCriteriaList newData) void
+            +Update~AbstractCriteriaList~(string id, AbstractCriteriaList newData) void
+            +Delete(string id) void
+        }
+
+        class Participants {
+            -HashSet~AbstractParticipant~ _participant
+            +GetAll~AbstractParticipant~() HashSet~AbstractParticipant~
+            +Get~AbstractParticipant~(string id) AbstractParticipant
+            +Add~AbstractParticipant~(AbstractParticipant newData) void
+            +Update~AbstractParticipant~(string id, AbstractParticipant newData) void
+            +Delete(string id) void
         }
     }
-    Mark <--* PerformanceProfile
-    Mark <--* TechnicalProfile
-    PerformanceProfile <--* Evaluation
-    TechnicalProfile <--* Evaluation
-    Evaluation <--o Evaluations
+    IWrapper <|.. CriteriaLists
+    IWrapper <|.. Participants
+    AbstractCriteriaList <--o CriteriaLists
+    AbstractParticipant <--o Participants
 
     namespace Person {
         class FullName {
-            -string Name
-            -string Surname
-            -string Patronymic
+            -string _name
+            -string _surname
+            -string _patronymic
             +FullName(string name, string surname, string patronymic)
             +GetName() string
             +GetSurname() string
@@ -87,34 +126,33 @@ classDiagram
         }
 
         class AbstractPerson {
-            -FullName FullName
-            -uint Age
+            <<Abstract>>
+            -FullName _fullName
+            -uint _age
             +AbstractPerson(FullName fullName, uint age)
             +GetFullName() FullName
             +GetAge() uint
         }
 
         class AbstractParticipant {
-            -Guid Id
-            -Guid GroupId
-            AbstractParticipant(string id, string groupId, FullName fullName, uint age)
+            <<Abstract>>
+            -Guid _id
+            AbstractParticipant(string id, FullName fullName, uint age)
             +GetId() Guid
-            +GetGroupId() Guid
-            +SetGroupId() void
         }
 
         class Participant {
-            +Participant(string id, string groupId, FullName fullName, uint age)
+            +Participant(string id, FullName fullName, uint age)
         }
 
         class Expert {
-            +Expert(string id, string groupId, FullName fullName, uint age)
+            +Expert(string id, FullName fullName, uint age)
         }
     }
     FullName <--* AbstractPerson
     AbstractPerson <--* AbstractParticipant
-    AbstractParticipant <--* Participant
-    AbstractParticipant <--* Expert
+    AbstractParticipant <|-- Participant
+    AbstractParticipant <|-- Expert
 
     namespace Group {
         class Direction {
@@ -125,21 +163,23 @@ classDiagram
         }
 
         class AbstractGroup {
-            -Guid Id
-            -Guid CriteriaListId
-            -string Name
-            -Direction Direction
-            -HashSet~Participant~ Participants
-            -HashSet~Expert~ Experts
+            <<Abstract>>
+            -Guid _id
+            -Guid _criteriaListId
+            -string _name
+            -Direction _direction
+            -Participants _participants
+            -Participants _experts
             +AbstractGroup(string name, Direction direction, string id, string criteriaListId)
             +GetId() Guid
             +GetCriteriaListId() Guid
             +GetName() string
-            +GetParticipants() HashSet~Participant~
-            +GetExperts() HashSet~Expert~
+            +GetParticipants() Participants
+            +GetExperts() Participants
         }
     }
     Direction <--o AbstractGroup
+    Participants <--o AbstractGroup
 
     namespace Handler {
         class FileHandler {
@@ -154,5 +194,4 @@ classDiagram
         }
     }
     FileHandler <|.. JsonHandler
-
 ```
