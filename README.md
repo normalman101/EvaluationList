@@ -124,7 +124,7 @@ classDiagram
     Participants <--o AbstractGroup
 
     namespace Handler {
-        class FileHandler {
+        class IFileHandler {
             <<Interface>>
             #readData~T~(string filePath) List~T~
             #writeData~T~(string filePath, List~T~ data) void
@@ -135,5 +135,5 @@ classDiagram
             +writeData~T~(string filePath, List~T~ data) void
         }
     }
-    FileHandler <|.. JsonHandler
+    IFileHandler <|.. JsonHandler
 ```
